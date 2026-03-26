@@ -1,0 +1,636 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Movie Recommendation System | Harshad S. Bhagat | Roll No. 19</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#05050a; --bg2:#0d0d18; --surface:#12121f; --surface2:#1b1b2e;
+  --border:rgba(255,255,255,.07); --border2:rgba(255,255,255,.12);
+  --a1:#6c63ff; --a2:#ff3c6e; --a1-dim:rgba(108,99,255,.15); --a2-dim:rgba(255,60,110,.12);
+  --text:#eeedf5; --muted:#6e6d84; --muted2:#9998b0;
+  --r:10px; --fh:'Syne',sans-serif; --fb:'Inter',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--fb);font-size:15px;line-height:1.6;min-height:100vh;overflow-x:hidden;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+body::after{content:'';position:fixed;inset:0;z-index:0;background:radial-gradient(ellipse 60% 50% at 20% 20%,rgba(108,99,255,.07) 0%,transparent 70%),radial-gradient(ellipse 50% 40% at 80% 70%,rgba(255,60,110,.06) 0%,transparent 70%);pointer-events:none}
+body::before{content:'';position:fixed;inset:0;z-index:9999;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;opacity:.5}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--surface2);border-radius:99px}
+
+/* TOP BAR */
+.top-bar{position:relative;z-index:50;background:var(--surface);border-bottom:2px solid transparent;background-clip:padding-box;display:flex;align-items:stretch;justify-content:space-between;flex-wrap:wrap;padding:0 5vw;overflow:hidden}
+.top-bar::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:linear-gradient(to bottom,var(--a1),var(--a2))}
+.top-bar::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,var(--a1),var(--a2),transparent)}
+.tbl{display:flex;flex-direction:column;justify-content:center;padding:14px 0 14px 20px;gap:3px}
+.tbl-title{font-family:var(--fh);font-size:1.12rem;font-weight:800;letter-spacing:-.02em;background:linear-gradient(90deg,var(--a1),var(--a2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.tbl-sub{font-size:.73rem;color:var(--muted2)}
+.tbl-chips{display:flex;align-items:center;flex-wrap:wrap;gap:7px;padding:14px 0}
+.chip{display:inline-flex;align-items:center;gap:5px;font-size:.68rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:5px 11px;border-radius:99px;border:1px solid var(--border2);background:var(--bg2);color:var(--muted2)}
+.chip.a{background:var(--a1-dim);border-color:rgba(108,99,255,.3);color:#a09bff}
+.chip.r{background:var(--a2-dim);border-color:rgba(255,60,110,.25);color:#ff8fab}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 5vw;height:60px;background:rgba(5,5,10,.93);backdrop-filter:blur(18px);border-bottom:1px solid var(--border)}
+.logo{font-family:var(--fh);font-size:1.25rem;font-weight:800;letter-spacing:-.03em;text-decoration:none;color:var(--text);display:flex;align-items:center;gap:8px}
+.logo-dot{width:8px;height:8px;border-radius:50%;background:linear-gradient(135deg,var(--a1),var(--a2));box-shadow:0 0 10px var(--a1);animation:pulse 2s ease infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.7)}}
+.nav-r{display:flex;align-items:center;gap:6px}
+.nbtn{font-family:var(--fb);font-size:.75rem;font-weight:500;letter-spacing:.04em;text-transform:uppercase;padding:7px 14px;border-radius:99px;border:1px solid var(--border2);background:transparent;color:var(--muted2);cursor:pointer;text-decoration:none;transition:all .2s}
+.nbtn:hover{background:var(--surface2);color:var(--text)}
+.nbtn.on{background:var(--a1-dim);border-color:rgba(108,99,255,.35);color:#a09bff}
+
+/* HERO */
+.hero{position:relative;z-index:1;min-height:82vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 5vw 50px;text-align:center}
+.badge{display:inline-flex;align-items:center;gap:8px;font-size:.7rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#a09bff;background:var(--a1-dim);border:1px solid rgba(108,99,255,.25);padding:6px 16px;border-radius:99px;margin-bottom:28px;animation:fadeUp .7s ease both}
+.bdot{width:6px;height:6px;border-radius:50%;background:var(--a1);animation:pulse 2s ease infinite}
+h1{font-family:var(--fh);font-size:clamp(2.3rem,6.5vw,4.8rem);font-weight:800;line-height:1.06;letter-spacing:-.04em;max-width:860px;animation:fadeUp .7s .08s ease both}
+.hl{background:linear-gradient(100deg,var(--a1) 0%,#a89cff 40%,var(--a2) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{margin-top:18px;font-size:.98rem;color:var(--muted2);max-width:520px;line-height:1.75;animation:fadeUp .7s .16s ease both}
+.tech-row{display:flex;flex-wrap:wrap;justify-content:center;gap:7px;margin-top:22px;animation:fadeUp .7s .22s ease both}
+.tpill{font-size:.66rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:4px 11px;border-radius:99px;border:1px solid var(--border2);background:var(--surface);color:var(--muted2)}
+
+/* SEARCH */
+.s-outer{margin-top:36px;width:100%;max-width:620px;animation:fadeUp .7s .28s ease both;position:relative}
+.s-box{display:flex;align-items:center;background:var(--surface2);border:1.5px solid var(--border2);border-radius:14px;padding:5px 5px 5px 18px;box-shadow:0 8px 40px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.04);transition:border-color .25s,box-shadow .25s}
+.s-box:focus-within{border-color:rgba(108,99,255,.55);box-shadow:0 8px 40px rgba(0,0,0,.5),0 0 0 4px rgba(108,99,255,.08)}
+.s-ic{width:18px;height:18px;color:var(--muted);flex-shrink:0;margin-right:10px}
+#searchInput{flex:1;background:none;border:none;outline:none;color:var(--text);font-family:var(--fb);font-size:.97rem;padding:13px 0}
+#searchInput::placeholder{color:var(--muted)}
+.s-go{background:linear-gradient(135deg,var(--a1),#8b82ff);color:#fff;font-family:var(--fh);font-weight:700;font-size:.83rem;letter-spacing:.02em;border:none;cursor:pointer;border-radius:10px;padding:12px 24px;transition:opacity .2s,transform .15s,box-shadow .2s;white-space:nowrap;flex-shrink:0}
+.s-go:hover{opacity:.88;transform:scale(1.02);box-shadow:0 0 22px rgba(108,99,255,.4)}
+.s-go:active{transform:scale(.97)}
+#sugs{position:absolute;top:calc(100% + 8px);left:0;right:0;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r);display:none;z-index:200;box-shadow:0 20px 60px rgba(0,0,0,.65);max-height:300px;overflow-y:auto}
+#sugs:not(:empty){display:block}
+.si{padding:11px 16px;cursor:pointer;font-size:.875rem;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);transition:background .15s;color:var(--muted2)}
+.si:last-child{border-bottom:none}
+.si:hover,.si.hi{background:var(--a1-dim);color:var(--text)}
+.sic{color:var(--a1);opacity:.7;flex-shrink:0;font-size:.8rem}
+.spin-w{display:none;flex-direction:column;align-items:center;gap:12px;padding:28px 0}
+.spin-w.on{display:flex}
+.spinner{width:42px;height:42px;border:2.5px solid var(--border2);border-top-color:var(--a1);border-radius:50%;animation:spin .75s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin-lbl{color:var(--muted);font-size:.82rem}
+
+/* MAIN */
+main{position:relative;z-index:1;padding:0 5vw 100px}
+.sec-h{display:flex;align-items:center;gap:12px;margin-bottom:24px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+.sec-t{font-family:var(--fh);font-size:1.3rem;font-weight:700;letter-spacing:-.02em}
+.sec-tag{font-size:.63rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 9px;border-radius:99px;background:var(--a1-dim);border:1px solid rgba(108,99,255,.25);color:#a09bff}
+.sec-cnt{color:var(--muted);font-size:.78rem;margin-left:auto}
+.notice{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:var(--r);font-size:.82rem;margin-bottom:20px}
+.notice.warn{background:rgba(255,160,0,.08);border:1px solid rgba(255,160,0,.2);color:#ffc966}
+.notice.err{background:var(--a2-dim);border:1px solid rgba(255,60,110,.2);color:#ff8fab}
+.rbanner{background:var(--surface);border:1px solid var(--border2);border-left:3px solid var(--a1);border-radius:var(--r);padding:18px 20px;display:flex;align-items:flex-start;gap:14px;margin-bottom:24px;animation:fadeUp .4s ease both}
+.rbanner-ic{font-size:1.5rem;flex-shrink:0}
+.rbanner h3{font-family:var(--fh);font-size:.98rem;font-weight:700}
+.rbanner p{color:var(--muted2);font-size:.78rem;margin-top:3px;line-height:1.55}
+
+/* GRID */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:18px}
+
+/* CARD */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;cursor:pointer;transition:transform .3s cubic-bezier(.2,.8,.2,1),box-shadow .3s,border-color .3s;animation:cardIn .5s ease both;position:relative}
+.card:hover{transform:translateY(-7px) scale(1.015);box-shadow:0 24px 55px rgba(0,0,0,.55),0 0 0 1px rgba(108,99,255,.25);border-color:rgba(108,99,255,.3)}
+.card:nth-child(1){animation-delay:.04s}.card:nth-child(2){animation-delay:.08s}.card:nth-child(3){animation-delay:.12s}
+.card:nth-child(4){animation-delay:.16s}.card:nth-child(5){animation-delay:.20s}.card:nth-child(6){animation-delay:.24s}
+.card:nth-child(7){animation-delay:.28s}.card:nth-child(8){animation-delay:.32s}.card:nth-child(n+9){animation-delay:.36s}
+@keyframes cardIn{from{opacity:0;transform:translateY(22px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+.pw{position:relative;overflow:hidden}
+.pw::after{content:'▶';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:2.2rem;color:#fff;background:rgba(0,0,0,.5);opacity:0;transition:opacity .25s}
+.card:hover .pw::after{opacity:1}
+img.poster{width:100%;aspect-ratio:2/3;object-fit:cover;display:block}
+.pskel{width:100%;aspect-ratio:2/3;background:linear-gradient(90deg,var(--surface2) 25%,var(--surface) 50%,var(--surface2) 75%);background-size:200% 100%;animation:shimmer 1.3s ease infinite}
+.pph{width:100%;aspect-ratio:2/3;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--muted)}
+.pph svg{width:36px;height:36px;opacity:.3}
+.pph span{font-size:.7rem;opacity:.4;text-align:center;padding:0 8px}
+@keyframes shimmer{from{background-position:200% 0}to{background-position:-200% 0}}
+.sim-b{position:absolute;top:8px;right:8px;background:rgba(5,5,10,.8);border:1px solid rgba(108,99,255,.4);color:#a09bff;font-size:.63rem;font-weight:700;padding:3px 8px;border-radius:99px;backdrop-filter:blur(6px);letter-spacing:.04em}
+.lang-b{position:absolute;top:8px;left:8px;font-size:.58rem;font-weight:700;padding:2px 7px;border-radius:99px;backdrop-filter:blur(6px);letter-spacing:.04em;border:1px solid}
+.lang-hi{background:rgba(255,153,0,.18);border-color:rgba(255,153,0,.4);color:#ffb347}
+.lang-mr{background:rgba(255,100,80,.18);border-color:rgba(255,100,80,.4);color:#ff8c78}
+.lang-te{background:rgba(80,200,120,.18);border-color:rgba(80,200,120,.4);color:#6fdb8c}
+.lang-ta{background:rgba(80,160,255,.18);border-color:rgba(80,160,255,.4);color:#80bcff}
+.lang-kn{background:rgba(220,80,200,.18);border-color:rgba(220,80,200,.4);color:#e080d8}
+.lang-ml{background:rgba(255,200,0,.18);border-color:rgba(255,200,0,.4);color:#ffd040}
+.cb{padding:13px 14px 15px}
+.ct{font-family:var(--fh);font-size:.9rem;font-weight:700;line-height:1.3;margin-bottom:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.cm{display:flex;align-items:center;gap:8px;font-size:.7rem;color:var(--muted);margin-bottom:7px}
+.star{color:#f5c542;font-size:.7rem;font-weight:700}
+.cov{font-size:.74rem;color:var(--muted2);line-height:1.55;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.cg{display:flex;flex-wrap:wrap;gap:4px;margin-top:9px}
+.gc{font-size:.6rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:2px 7px;border-radius:99px;background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--muted)}
+.empty{text-align:center;padding:60px 20px;color:var(--muted);grid-column:1/-1}
+.empty svg{width:52px;height:52px;opacity:.2;margin-bottom:16px;display:block;margin-inline:auto}
+.empty h3{font-family:var(--fh);font-size:1.2rem;color:var(--text)}
+.empty p{font-size:.85rem;margin-top:6px}
+
+/* MODAL */
+.overlay{position:fixed;inset:0;z-index:500;background:rgba(3,3,8,.88);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .3s}
+.overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:18px;max-width:680px;width:100%;max-height:90vh;overflow-y:auto;transform:scale(.94) translateY(18px);transition:transform .35s cubic-bezier(.2,.8,.2,1);box-shadow:0 40px 100px rgba(0,0,0,.85)}
+.overlay.open .modal{transform:scale(1) translateY(0)}
+.mhero{position:relative;width:100%;height:260px;overflow:hidden;flex-shrink:0}
+.mhero img{width:100%;height:100%;object-fit:cover;display:block}
+.mfade{position:absolute;bottom:0;left:0;right:0;height:120px;background:linear-gradient(to bottom,transparent,var(--surface))}
+.mx{position:absolute;top:12px;right:12px;background:rgba(0,0,0,.65);color:#fff;border:none;cursor:pointer;border-radius:50%;width:34px;height:34px;font-size:1rem;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px);transition:background .2s}
+.mx:hover{background:rgba(0,0,0,.95)}
+.mbody{padding:22px 26px 30px}
+.mtitle{font-family:var(--fh);font-size:1.7rem;font-weight:800;letter-spacing:-.03em;line-height:1.15;margin-bottom:10px}
+.mmeta{display:flex;flex-wrap:wrap;gap:12px;color:var(--muted2);font-size:.82rem;margin-bottom:12px}
+.mov{font-size:.9rem;line-height:1.75;color:rgba(238,237,245,.8);margin-bottom:14px}
+.mcast{font-size:.82rem;color:var(--muted2)}
+.mcast strong{color:var(--text)}
+.mact{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+.btn-p{background:linear-gradient(135deg,var(--a1),#8b82ff);color:#fff;font-family:var(--fh);font-weight:700;font-size:.85rem;border:none;cursor:pointer;padding:11px 22px;border-radius:9px;transition:opacity .2s,transform .15s}
+.btn-p:hover{opacity:.88;transform:scale(1.02)}
+.btn-s{background:var(--surface2);color:var(--text);font-weight:600;font-size:.85rem;font-family:var(--fb);border:1px solid var(--border2);cursor:pointer;padding:11px 22px;border-radius:9px;transition:background .2s}
+.btn-s:hover{background:rgba(255,255,255,.08)}
+
+/* FOOTER */
+footer{position:relative;z-index:1;border-top:1px solid var(--border);padding:32px 5vw}
+.fi{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:24px}
+.fp h4,.ft h4{font-family:var(--fh);font-size:.95rem;font-weight:700;margin-bottom:10px}
+.fp ul{list-style:none;display:flex;flex-direction:column;gap:4px}
+.fp li{font-size:.76rem;color:var(--muted2)}
+.fp li strong{color:var(--text)}
+.ftps{display:flex;flex-wrap:wrap;gap:6px}
+.ftps span{font-size:.66rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:4px 10px;border-radius:99px;background:var(--surface2);border:1px solid var(--border2);color:var(--muted2)}
+.fb{margin-top:22px;padding-top:18px;border-top:1px solid var(--border);text-align:center;font-size:.72rem;color:var(--muted)}
+.fb a{color:var(--a1);text-decoration:none}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── TABLET ── */
+@media(max-width:900px){
+  .grid{grid-template-columns:repeat(auto-fill,minmax(165px,1fr));gap:14px}
+}
+
+/* ── MOBILE ── */
+@media(max-width:640px){
+  /* Top bar */
+  .top-bar{padding:0 4vw;flex-direction:column;align-items:flex-start}
+  .tbl{padding:10px 0 6px 12px}
+  .tbl-title{font-size:.9rem}
+  .tbl-sub{font-size:.65rem}
+  .tbl-chips{padding:6px 0 10px 12px;gap:5px;flex-wrap:wrap}
+  .chip{font-size:.6rem;padding:3px 8px}
+
+  /* Nav */
+  nav{padding:0 4vw;height:52px}
+  .logo{font-size:1.05rem}
+  .nbtn{font-size:.65rem;padding:5px 10px}
+
+  /* Hero */
+  .hero{padding:36px 4vw 32px;min-height:auto}
+  .badge{font-size:.62rem;padding:5px 12px;margin-bottom:18px}
+  h1{font-size:clamp(1.65rem,8vw,2.5rem);letter-spacing:-.03em}
+  .hero-sub{font-size:.88rem;margin-top:14px}
+  .tech-row{gap:5px;margin-top:14px}
+  .tpill{font-size:.58rem;padding:3px 8px}
+
+  /* Search */
+  .s-outer{margin-top:24px}
+  .s-box{padding:4px 4px 4px 14px;border-radius:12px}
+  #searchInput{font-size:.88rem;padding:11px 0}
+  .s-ic{width:16px;height:16px;margin-right:8px}
+  .s-go{padding:10px 14px;font-size:.75rem;border-radius:8px}
+
+  /* Spinner */
+  .spin-w{padding:20px 0}
+  .spinner{width:34px;height:34px}
+
+  /* Main */
+  main{padding:0 4vw 60px}
+  .sec-h{flex-wrap:wrap;gap:8px;margin-bottom:16px}
+  .sec-t{font-size:1.1rem}
+  .sec-tag{font-size:.58rem}
+  .sec-cnt{font-size:.7rem;margin-left:auto}
+  .notice{font-size:.75rem;padding:10px 12px}
+  .rbanner{padding:14px 14px;gap:10px}
+  .rbanner-ic{font-size:1.2rem}
+  .rbanner h3{font-size:.88rem}
+  .rbanner p{font-size:.72rem}
+
+  /* Grid */
+  .grid{grid-template-columns:repeat(2,1fr);gap:10px}
+  .card{border-radius:10px}
+  .card:hover{transform:translateY(-3px) scale(1.008)}
+  img.poster{aspect-ratio:2/3}
+  .cb{padding:10px 10px 12px}
+  .ct{font-size:.82rem;margin-bottom:4px}
+  .cm{font-size:.64rem;gap:6px;margin-bottom:5px}
+  .cov{font-size:.68rem;-webkit-line-clamp:2}
+  .gc{font-size:.54rem;padding:2px 5px}
+  .sim-b{font-size:.56rem;padding:2px 6px;top:6px;right:6px}
+
+  /* Modal */
+  .overlay{padding:0;align-items:flex-end}
+  .modal{border-radius:18px 18px 0 0;max-height:92vh;width:100%;transform:scale(1) translateY(100%)}
+  .overlay.open .modal{transform:scale(1) translateY(0)}
+  .mhero{height:200px}
+  .mbody{padding:16px 16px 32px}
+  .mtitle{font-size:1.25rem}
+  .mmeta{font-size:.76rem;gap:8px}
+  .mov{font-size:.84rem}
+  .mcast{font-size:.76rem}
+  .mact{gap:8px;margin-top:16px}
+  .btn-p,.btn-s{padding:10px 16px;font-size:.8rem;flex:1;text-align:center}
+  .mx{width:30px;height:30px;font-size:.85rem;top:10px;right:10px}
+
+  /* Empty state */
+  .empty{padding:40px 16px}
+  .empty svg{width:40px;height:40px}
+  .empty h3{font-size:1rem}
+  .empty p{font-size:.78rem}
+
+  /* Footer */
+  footer{padding:24px 4vw}
+  .fi{flex-direction:column;gap:16px}
+  .fp h4,.ft h4{font-size:.88rem;margin-bottom:7px}
+  .fp li{font-size:.7rem}
+  .ftps span{font-size:.6rem;padding:3px 8px}
+  .fb{font-size:.65rem;margin-top:16px;padding-top:14px}
+}
+
+/* ── EXTRA SMALL (iPhone SE etc.) ── */
+@media(max-width:380px){
+  h1{font-size:1.5rem}
+  .grid{gap:8px}
+  .cb{padding:8px 8px 10px}
+  .ct{font-size:.78rem}
+}
+
+/* ── Touch / tap improvements ── */
+@media(hover:none){
+  .card:hover{transform:none;box-shadow:none;border-color:var(--border)}
+  .card:active{transform:scale(.97);border-color:rgba(108,99,255,.3)}
+  .s-go:hover{opacity:1;transform:none;box-shadow:none}
+  .s-go:active{opacity:.85;transform:scale(.97)}
+  .nbtn:hover{background:transparent;color:var(--muted2)}
+  .nbtn:active{background:var(--surface2);color:var(--text)}
+  .pw::after{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ TOP ACADEMIC BAR ══ -->
+<div class="top-bar">
+  <div class="tbl">
+    <div class="tbl-title">🎬 Movie Recommendation System — Mini Project</div>
+    <div class="tbl-sub">Subject: DSBDA (Data Science and Big Data Analytics)</div>
+  </div>
+  <div class="tbl-chips">
+    <span class="chip a">👤 Harshad S. Bhagat</span>
+    <span class="chip r">🎲 Roll No. 19</span>
+    <span class="chip">📚 DSBDA</span>
+    <span class="chip">🤖 scikit-learn</span>
+    <span class="chip">🐍 Python</span>
+  </div>
+</div>
+
+<!-- ══ NAV ══ -->
+<nav>
+  <a href="#" class="logo"><div class="logo-dot"></div>CineMatch</a>
+  <div class="nav-r">
+    <a href="#recommendations" class="nbtn on">Recommendations</a>
+    <a href="#trending"        class="nbtn">Trending</a>
+  </div>
+</nav>
+
+<!-- ══ HERO ══ -->
+<section class="hero">
+  <div class="badge"><span class="bdot"></span>Content-Based Filtering · TF-IDF · Cosine Similarity</div>
+  <h1>Discover movies<br>you'll <span class="hl">love next</span></h1>
+  <p class="hero-sub">Enter any movie title — our ML model analyses genres, cast, director, keywords &amp; plot to surface your next obsession.</p>
+  <div class="tech-row">
+    <span class="tpill">Python</span><span class="tpill">pandas</span>
+    <span class="tpill">scikit-learn</span><span class="tpill">TF-IDF Vectorizer</span>
+    <span class="tpill">Cosine Similarity</span><span class="tpill">FastAPI</span>
+  </div>
+  <div class="s-outer">
+    <div class="s-box">
+      <svg class="s-ic" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+      </svg>
+      <input id="searchInput" type="search" placeholder="e.g. Dangal, Baahubali, Inception…" autocomplete="off" inputmode="search" enterkeyhint="search" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <button class="s-go" onclick="handleSearch()">Find Similar</button>
+    </div>
+    <div id="sugs"></div>
+  </div>
+  <div class="spin-w" id="spinW">
+    <div class="spinner"></div>
+    <span class="spin-lbl">Computing cosine similarity…</span>
+  </div>
+</section>
+
+<!-- ══ MAIN ══ -->
+<main>
+  <div id="apiNotice" class="notice warn" style="display:none">
+    ⚠️ &nbsp;Backend not reachable — showing demo data.
+    &nbsp;<strong>Start:</strong> <code>cd backend &amp;&amp; python3 app.py</code>
+  </div>
+  <section id="recommendations" style="display:none;margin-bottom:52px">
+    <div id="resBanner"></div>
+    <div class="sec-h">
+      <span class="sec-t">Because you liked</span>
+      <span id="qTitle" class="sec-tag"></span>
+      <span id="recCnt" class="sec-cnt"></span>
+    </div>
+    <div id="recGrid" class="grid"></div>
+  </section>
+  <section id="trending">
+    <div class="sec-h">
+      <span class="sec-t">Trending Movies</span>
+      <span class="sec-tag">🔥 Top Rated</span>
+    </div>
+    <div id="trendGrid" class="grid"></div>
+  </section>
+</main>
+
+<!-- ══ FOOTER ══ -->
+<footer>
+  <div class="fi">
+    <div class="fp">
+      <h4>📋 Project Details</h4>
+      <ul>
+        <li><strong>Student:</strong> Harshad S. Bhagat</li>
+        <li><strong>Roll No.:</strong> 19</li>
+        <li><strong>Subject:</strong> DSBDA — Data Science and Big Data Analytics</li>
+        <li><strong>Project Type:</strong> Mini Project</li>
+        <li><strong>Objective:</strong> Movie Recommendation Model using scikit-learn</li>
+        <li><strong>Dataset:</strong> rashida048 / movie_dataset.csv (~5,000 movies)</li>
+      </ul>
+    </div>
+    <div class="ft">
+      <h4>⚙️ Tech Stack</h4>
+      <div class="ftps">
+        <span>Python 3</span><span>pandas</span><span>scikit-learn</span>
+        <span>TF-IDF</span><span>Cosine Similarity</span>
+        <span>FastAPI</span><span>TMDB API</span><span>HTML/CSS/JS</span>
+      </div>
+    </div>
+  </div>
+  <div class="fb">
+    Mini Project &nbsp;·&nbsp; DSBDA &nbsp;·&nbsp;
+    <strong style="color:var(--text)">Harshad S. Bhagat</strong> &nbsp;·&nbsp; Roll No. 19 &nbsp;·&nbsp;
+    Dataset: <a href="https://github.com/rashida048/Some-NLP-Projects/blob/master/movie_dataset.csv" target="_blank">rashida048/movie_dataset.csv</a>
+  </div>
+</footer>
+
+<!-- ══ MODAL ══ -->
+<div class="overlay" id="overlay" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="mhero" id="mHero"></div>
+    <div class="mbody" id="mBody"></div>
+  </div>
+</div>
+
+<script>
+const API="http://10.45.182.157:8000";
+const TMDB_KEY="8265bd1679663a7ea12ac168da84d2e8";
+const TMDB_BASE="https://api.themoviedb.org/3";
+const TMDB_W500="https://image.tmdb.org/t/p/w500";
+const TMDB_W780="https://image.tmdb.org/t/p/w780";
+const posterCache={};
+let allTitles=[],sugTimer,activeIdx=-1,apiOnline=false;
+
+const DEMO_REC=[
+  {title:"The Dark Knight",genres:"Action Crime Drama",overview:"Batman must accept one of the greatest psychological tests when the Joker unleashes anarchy on Gotham.",vote_average:"9.0",release_date:"2008-07-18",director:"Christopher Nolan",cast:"Christian Bale, Heath Ledger, Aaron Eckhart",similarity:.98},
+  {title:"Inception",genres:"Action Sci-Fi Thriller",overview:"A thief who steals corporate secrets through dream-sharing is given the inverse task — planting an idea.",vote_average:"8.8",release_date:"2010-07-16",director:"Christopher Nolan",cast:"Leonardo DiCaprio, Joseph Gordon-Levitt, Elliot Page",similarity:.91},
+  {title:"Interstellar",genres:"Adventure Drama Sci-Fi",overview:"A team of explorers travel through a wormhole in space to ensure humanity's survival.",vote_average:"8.6",release_date:"2014-11-05",director:"Christopher Nolan",cast:"Matthew McConaughey, Anne Hathaway, Jessica Chastain",similarity:.87},
+  {title:"The Prestige",genres:"Drama Mystery Sci-Fi",overview:"Two stage magicians engage in a bitter rivalry to create the ultimate illusion.",vote_average:"8.5",release_date:"2006-10-20",director:"Christopher Nolan",cast:"Christian Bale, Hugh Jackman, Scarlett Johansson",similarity:.83},
+  {title:"Memento",genres:"Mystery Thriller",overview:"A man with short-term memory loss hunts his wife's murderer using notes and polaroids.",vote_average:"8.4",release_date:"2000-10-11",director:"Christopher Nolan",cast:"Guy Pearce, Carrie-Anne Moss, Joe Pantoliano",similarity:.79},
+  {title:"Batman Begins",genres:"Action Adventure",overview:"Bruce Wayne becomes Batman and begins his fight to free crime-ridden Gotham City.",vote_average:"8.2",release_date:"2005-06-15",director:"Christopher Nolan",cast:"Christian Bale, Michael Caine, Liam Neeson",similarity:.75},
+  {title:"The Dark Knight Rises",genres:"Action Crime Drama",overview:"Eight years on, Bane overwhelms Gotham's finest and the Dark Knight resurfaces.",vote_average:"8.4",release_date:"2012-07-20",director:"Christopher Nolan",cast:"Christian Bale, Tom Hardy, Anne Hathaway",similarity:.72},
+  {title:"The Matrix",genres:"Action Sci-Fi",overview:"A hacker discovers the true nature of reality and his role in the war against its controllers.",vote_average:"8.7",release_date:"1999-03-31",director:"Lana Wachowski",cast:"Keanu Reeves, Laurence Fishburne, Carrie-Anne Moss",similarity:.66},
+  {title:"Dunkirk",genres:"Action Drama History",overview:"Allied soldiers are evacuated during a harrowing battle that almost ended World War II.",vote_average:"8.1",release_date:"2017-07-19",director:"Christopher Nolan",cast:"Fionn Whitehead, Tom Hardy, Mark Rylance",similarity:.62},
+  {title:"Se7en",genres:"Crime Drama Mystery",overview:"Two detectives hunt a killer who uses the seven deadly sins as his modus operandi.",vote_average:"8.6",release_date:"1995-09-22",director:"David Fincher",cast:"Morgan Freeman, Brad Pitt, Kevin Spacey",similarity:.58},
+];
+const DEMO_TREND=[
+  {title:"The Shawshank Redemption",genres:"Drama",overview:"Two imprisoned men bond finding redemption through acts of common decency.",vote_average:"9.3",release_date:"1994-09-23",director:"Frank Darabont",cast:"Tim Robbins, Morgan Freeman"},
+  {title:"The Godfather",genres:"Crime Drama",overview:"The aging patriarch of an organized crime dynasty transfers control to his reluctant son.",vote_average:"9.2",release_date:"1972-03-24",director:"Francis Ford Coppola",cast:"Marlon Brando, Al Pacino, James Caan"},
+  {title:"Pulp Fiction",genres:"Crime Drama",overview:"The lives of two mob hitmen intertwine in four tales of violence and redemption.",vote_average:"8.9",release_date:"1994-10-14",director:"Quentin Tarantino",cast:"John Travolta, Uma Thurman, Samuel L. Jackson"},
+  {title:"The Dark Knight",genres:"Action Crime Drama",overview:"Batman must accept one of the greatest psychological tests when the Joker strikes.",vote_average:"9.0",release_date:"2008-07-18",director:"Christopher Nolan",cast:"Christian Bale, Heath Ledger"},
+  {title:"Schindler's List",genres:"Biography Drama History",overview:"Oskar Schindler gradually becomes concerned for his Jewish workforce in occupied Poland.",vote_average:"9.0",release_date:"1993-12-15",director:"Steven Spielberg",cast:"Liam Neeson, Ralph Fiennes"},
+  {title:"Forrest Gump",genres:"Drama Romance",overview:"Historical events unfold from the perspective of an Alabama man with a kind heart.",vote_average:"8.8",release_date:"1994-07-06",director:"Robert Zemeckis",cast:"Tom Hanks, Robin Wright"},
+  {title:"Fight Club",genres:"Drama Thriller",overview:"An insomniac forms an underground fight club that evolves into something far more.",vote_average:"8.8",release_date:"1999-10-15",director:"David Fincher",cast:"Brad Pitt, Edward Norton"},
+  {title:"Inception",genres:"Action Sci-Fi Thriller",overview:"A thief uses dream-sharing technology and is given the inverse task of planting an idea.",vote_average:"8.8",release_date:"2010-07-16",director:"Christopher Nolan",cast:"Leonardo DiCaprio, Joseph Gordon-Levitt"},
+  {title:"The Lord of the Rings: The Return of the King",genres:"Adventure Fantasy",overview:"Aragorn leads the World of Men against Sauron while Frodo approaches Mount Doom.",vote_average:"9.0",release_date:"2003-12-17",director:"Peter Jackson",cast:"Elijah Wood, Viggo Mortensen"},
+  {title:"Goodfellas",genres:"Biography Crime",overview:"Henry Hill and his life in the mob from childhood through his adult years.",vote_average:"8.7",release_date:"1990-09-19",director:"Martin Scorsese",cast:"Ray Liotta, Robert De Niro, Joe Pesci"},
+  {title:"Interstellar",genres:"Adventure Drama Sci-Fi",overview:"Explorers travel through a wormhole to find a new home for humanity.",vote_average:"8.6",release_date:"2014-11-05",director:"Christopher Nolan",cast:"Matthew McConaughey, Anne Hathaway"},
+  {title:"The Silence of the Lambs",genres:"Crime Thriller",overview:"An FBI cadet enlists an incarcerated cannibal to help catch another serial killer.",vote_average:"8.6",release_date:"1991-02-14",director:"Jonathan Demme",cast:"Jodie Foster, Anthony Hopkins"},
+  {title:"3 Idiots",genres:"Comedy Drama",overview:"Two friends search for a third college friend while recounting hilarious and inspiring events of their university days.",vote_average:"8.4",release_date:"2009-12-25",director:"Rajkumar Hirani",cast:"Aamir Khan, Madhavan, Sharman Joshi",original_language:"hi"},
+  {title:"Dangal",genres:"Biography Drama Sport",overview:"Former wrestler Mahavir Singh Phogat trains his daughters to become world-class wrestlers.",vote_average:"8.4",release_date:"2016-12-23",director:"Nitesh Tiwari",cast:"Aamir Khan, Fatima Sana Shaikh",original_language:"hi"},
+  {title:"Baahubali 2: The Conclusion",genres:"Action Adventure Fantasy",overview:"The conclusion reveals why Kattappa killed Baahubali and how the warrior prince defeats the tyrant king.",vote_average:"8.2",release_date:"2017-04-28",director:"S. S. Rajamouli",cast:"Prabhas, Rana Daggubati, Anushka Shetty",original_language:"te"},
+  {title:"Sairat",genres:"Drama Romance",overview:"Two teenagers from different castes in Maharashtra fall in love and face violent consequences.",vote_average:"8.3",release_date:"2016-04-29",director:"Nagraj Manjule",cast:"Rinku Rajguru, Akash Thosar",original_language:"mr"},
+  {title:"Sholay",genres:"Action Adventure Drama",overview:"Two criminals are hired by a retired police officer to capture a deadly bandit who terrorises a village.",vote_average:"8.2",release_date:"1975-08-15",director:"Ramesh Sippy",cast:"Amitabh Bachchan, Dharmendra, Hema Malini",original_language:"hi"},
+  {title:"RRR",genres:"Action Adventure Drama",overview:"A fictional tale of two legendary Indian freedom fighters and their journey before they began fighting for their countries.",vote_average:"8.0",release_date:"2022-03-25",director:"S. S. Rajamouli",cast:"N. T. Rama Rao Jr., Ram Charan",original_language:"te"},
+  {title:"Vikram",genres:"Action Crime Thriller",overview:"A special agent investigates masked killer attacks targeting police officers, uncovering a larger criminal conspiracy.",vote_average:"8.4",release_date:"2022-06-03",director:"Lokesh Kanagaraj",cast:"Kamal Haasan, Vijay Sethupathi, Fahadh Faasil",original_language:"ta"},
+];
+
+/* ── TMDB ── */
+async function fetchTmdb(movie){
+  const key=(movie.title||"").toLowerCase().trim();
+  if(key in posterCache) return posterCache[key];
+  posterCache[key]=null;
+  if(movie.poster_path&&movie.poster_path.startsWith("/")){
+    posterCache[key]={poster:TMDB_W500+movie.poster_path,backdrop:movie.backdrop_path?TMDB_W780+movie.backdrop_path:null};
+    return posterCache[key];
+  }
+  try{
+    const yr=(movie.release_date||"").slice(0,4);
+    const q=encodeURIComponent(movie.title||"");
+    const r=await fetch(`${TMDB_BASE}/search/movie?api_key=${TMDB_KEY}&query=${q}${yr?"&year="+yr:""}&language=en-US&page=1`);
+    if(!r.ok) throw 0;
+    const j=await r.json();
+    const h=j.results?.[0];
+    if(h?.poster_path) posterCache[key]={poster:TMDB_W500+h.poster_path,backdrop:h.backdrop_path?TMDB_W780+h.backdrop_path:null};
+  }catch{}
+  return posterCache[key];
+}
+
+function buildPosterEl(movie){
+  const key=(movie.title||"").toLowerCase().trim();
+  const c=posterCache[key];
+  if(c?.poster){
+    const img=Object.assign(document.createElement("img"),{className:"poster",src:c.poster,alt:movie.title,loading:"lazy"});
+    img.onerror=()=>img.replaceWith(buildPh(movie));
+    return img;
+  }
+  const wrap=document.createElement("div");
+  wrap.className="pskel";
+  fetchTmdb(movie).then(data=>{
+    if(!wrap.isConnected) return;
+    if(data?.poster){
+      const img=Object.assign(document.createElement("img"),{className:"poster",src:data.poster,alt:movie.title});
+      img.style.cssText="opacity:0;transition:opacity .4s ease";
+      img.onload=()=>(img.style.opacity="1");
+      img.onerror=()=>img.replaceWith(buildPh(movie));
+      wrap.replaceWith(img);
+    } else wrap.replaceWith(buildPh(movie));
+  });
+  return wrap;
+}
+
+function buildPh(movie){
+  const hue=[...(movie.title||"")].reduce((s,c)=>s+c.charCodeAt(0),0)%360;
+  const d=document.createElement("div");
+  d.className="pph";
+  d.style.background=`linear-gradient(150deg,hsl(${hue},22%,15%),hsl(${(hue+45)%360},16%,10%))`;
+  d.innerHTML=`<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z"/></svg><span>${movie.title||""}</span>`;
+  return d;
+}
+
+async function prefetch(movies){
+  const B=6;
+  for(let i=0;i<movies.length;i+=B) await Promise.allSettled(movies.slice(i,i+B).map(fetchTmdb));
+}
+
+/* ── CARD ── */
+const LANG_LABELS = {hi:"Hindi",mr:"Marathi",te:"Telugu",ta:"Tamil",kn:"Kannada",ml:"Malayalam",bn:"Bengali",pa:"Punjabi"};
+function buildCard(movie,sim=false){
+  const card=document.createElement("div");
+  card.className="card";
+  card.addEventListener("click",()=>openModal(movie));
+  const pw=document.createElement("div"); pw.className="pw";
+  pw.appendChild(buildPosterEl(movie)); card.appendChild(pw);
+  if(sim&&movie.similarity!=null){
+    const b=document.createElement("div"); b.className="sim-b";
+    b.textContent=Math.round(movie.similarity*100)+"% match"; card.appendChild(b);
+  }
+  const lang=movie.original_language;
+  if(lang&&LANG_LABELS[lang]){
+    const lb=document.createElement("div");
+    lb.className=`lang-b lang-${lang}`;
+    lb.textContent=LANG_LABELS[lang]; card.appendChild(lb);
+  }
+  const body=document.createElement("div"); body.className="cb";
+  const tt=document.createElement("div"); tt.className="ct"; tt.textContent=movie.title||"Unknown"; body.appendChild(tt);
+  const meta=document.createElement("div"); meta.className="cm";
+  if(movie.vote_average&&+movie.vote_average>0) meta.innerHTML+=`<span class="star">★ ${(+movie.vote_average).toFixed(1)}</span>`;
+  if(movie.release_date) meta.innerHTML+=`<span>${movie.release_date.slice(0,4)}</span>`;
+  body.appendChild(meta);
+  if(movie.overview){const ov=document.createElement("div");ov.className="cov";ov.textContent=movie.overview;body.appendChild(ov);}
+  if(movie.genres){
+    const gc=document.createElement("div"); gc.className="cg";
+    movie.genres.replace(/['\[\]]/g,"").split(",").map(g=>g.trim()).filter(Boolean).slice(0,3).forEach(g=>{
+      const c=document.createElement("span"); c.className="gc"; c.textContent=g; gc.appendChild(c);
+    }); body.appendChild(gc);
+  }
+  card.appendChild(body); return card;
+}
+
+/* ── MODAL ── */
+async function openModal(movie){
+  const hero=document.getElementById("mHero"),body=document.getElementById("mBody");
+  document.getElementById("overlay").classList.add("open");
+  document.body.style.overflow="hidden";
+  const hue=[...(movie.title||"")].reduce((s,c)=>s+c.charCodeAt(0),0)%360;
+  hero.innerHTML=`<div id="mph" style="width:100%;height:100%;background:linear-gradient(135deg,hsl(${hue},25%,14%),hsl(${(hue+50)%360},20%,10%))"></div><div class="mfade"></div><button class="mx" onclick="closeModal()">✕</button>`;
+  const rating=movie.vote_average&&+movie.vote_average>0?`<span>★ ${(+movie.vote_average).toFixed(1)}</span>`:"";
+  const year=movie.release_date?`<span>📅 ${movie.release_date.slice(0,4)}</span>`:"";
+  const dir=movie.director?`<span>🎬 ${movie.director}</span>`:"";
+  body.innerHTML=`<h2 class="mtitle">${movie.title||"Unknown"}</h2>
+    <div class="mmeta">${rating}${year}${dir}</div>
+    ${movie.overview?`<p class="mov">${movie.overview}</p>`:""}
+    ${movie.cast?`<p class="mcast"><strong>Cast:</strong> ${movie.cast.replace(/['\[\]]/g,"").split(",").slice(0,5).join(", ")}</p>`:""}
+    ${movie.genres?`<div class="cg" style="margin-top:12px">${movie.genres.replace(/['\[\]]/g,"").split(",").map(g=>g.trim()).filter(Boolean).map(g=>`<span class="gc">${g}</span>`).join("")}</div>`:""}
+    <div class="mact">
+      <button class="btn-p" onclick="triggerSearch('${(movie.title||"").replace(/'/g,"\\'")}')">🔍 Find Similar Movies</button>
+      <button class="btn-s" onclick="closeModal()">Close</button>
+    </div>`;
+  const tmdb=await fetchTmdb(movie);
+  const ph=document.getElementById("mph");
+  if(ph?.isConnected&&tmdb){
+    const src=tmdb.backdrop||tmdb.poster;
+    if(src){const img=new Image();img.onload=()=>{if(!ph.isConnected)return;img.style.cssText="width:100%;height:100%;object-fit:cover;display:block;opacity:0;transition:opacity .5s ease";ph.replaceWith(img);requestAnimationFrame(()=>(img.style.opacity="1"));};img.src=src;}
+  }
+}
+function closeModal(e){if(e&&e.target!==document.getElementById("overlay"))return;document.getElementById("overlay").classList.remove("open");document.body.style.overflow="";}
+function triggerSearch(t){closeModal();document.getElementById("searchInput").value=t;handleSearch();}
+
+/* ── API ── */
+async function apiFetch(path,ms=6000){
+  const ac=new AbortController();const t=setTimeout(()=>ac.abort(),ms);
+  try{const r=await fetch(API+path,{signal:ac.signal});clearTimeout(t);if(!r.ok)throw new Error(await r.text());return r.json();}
+  catch(e){clearTimeout(t);throw e;}
+}
+async function loadTitles(){
+  try{const d=await apiFetch("/titles");allTitles=d.titles||[];apiOnline=true;}
+  catch{apiOnline=false;document.getElementById("apiNotice").style.display="flex";allTitles=[...new Set([...DEMO_REC,...DEMO_TREND].map(m=>m.title))];}
+}
+async function loadTrending(){
+  let movies;
+  try{const d=await apiFetch("/trending?limit=12");movies=d.results||[];apiOnline=true;}
+  catch{movies=DEMO_TREND.slice(0,12);}
+  renderGrid("trendGrid",movies,false);
+}
+
+/* ── SEARCH ── */
+async function handleSearch(){
+  const q=document.getElementById("searchInput").value.trim();
+  if(!q) return;
+  hideSug();spinner(true);document.getElementById("recommendations").style.display="none";
+  let movies=null,err=null;
+  try{const d=await apiFetch(`/recommend?movie=${encodeURIComponent(q)}&n=10`);movies=d.results||[];}
+  catch(e){if(!apiOnline)movies=DEMO_REC;else err=e.message||"Movie not found.";}
+  spinner(false);
+  if(err){showErr(err,q);return;}
+  const sec=document.getElementById("recommendations");
+  sec.style.display="block";
+  document.getElementById("qTitle").textContent=q;
+  document.getElementById("recCnt").textContent=movies.length+" results";
+  document.getElementById("resBanner").innerHTML=`<div class="rbanner"><div class="rbanner-ic">🎯</div><div><h3>Top picks for fans of "${q}"</h3><p>Matched via TF-IDF vectorisation + cosine similarity across genres, cast, keywords, director & overview.</p></div></div>`;
+  renderGrid("recGrid",movies,true);
+  sec.scrollIntoView({behavior:"smooth",block:"start"});
+}
+function showErr(msg,q){
+  const sec=document.getElementById("recommendations");
+  sec.style.display="block";
+  document.getElementById("resBanner").innerHTML=`<div class="notice err">⚠️ &nbsp;<strong>"${q}"</strong> — ${msg}</div>`;
+  document.getElementById("recGrid").innerHTML=`<div class="empty"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><h3>No results found</h3><p>Check spelling or pick a suggestion.</p></div>`;
+  document.getElementById("qTitle").textContent="";document.getElementById("recCnt").textContent="";
+  sec.scrollIntoView({behavior:"smooth",block:"start"});
+}
+function renderGrid(id,movies,sim){
+  const g=document.getElementById(id);g.innerHTML="";
+  if(!movies.length){g.innerHTML=`<div class="empty"><h3>No movies found</h3></div>`;return;}
+  movies.forEach(m=>g.appendChild(buildCard(m,sim)));
+  prefetch(movies);
+}
+function spinner(on){document.getElementById("spinW").classList.toggle("on",on);}
+
+/* ── AUTOCOMPLETE ── */
+document.getElementById("searchInput").addEventListener("input",function(){clearTimeout(sugTimer);sugTimer=setTimeout(()=>renderSug(this.value),170);});
+document.getElementById("searchInput").addEventListener("keydown",function(e){
+  const items=[...document.querySelectorAll(".si")];
+  if(e.key==="ArrowDown"){activeIdx=Math.min(activeIdx+1,items.length-1);hlSug(items);e.preventDefault();}
+  else if(e.key==="ArrowUp"){activeIdx=Math.max(activeIdx-1,-1);hlSug(items);e.preventDefault();}
+  else if(e.key==="Enter"){if(activeIdx>=0&&items[activeIdx])this.value=items[activeIdx].dataset.t;hideSug();handleSearch();}
+  else if(e.key==="Escape")hideSug();
+});
+document.addEventListener("click",e=>{if(!e.target.closest(".s-outer"))hideSug();});
+function renderSug(q){
+  const box=document.getElementById("sugs");activeIdx=-1;
+  if(!q.trim()){box.innerHTML="";return;}
+  const ql=q.toLowerCase();
+  const hits=allTitles.filter(t=>t.toLowerCase().includes(ql)).slice(0,8);
+  if(!hits.length){box.innerHTML="";return;}
+  box.innerHTML=hits.map(t=>`<div class="si" data-t="${t.replace(/"/g,"&quot;")}" onclick="pickSug('${t.replace(/'/g,"\\'")}')"><span class="sic">🎬</span>${t}</div>`).join("");
+}
+function hlSug(items){items.forEach((el,i)=>el.classList.toggle("hi",i===activeIdx));if(activeIdx>=0&&items[activeIdx])document.getElementById("searchInput").value=items[activeIdx].dataset.t;}
+function pickSug(t){document.getElementById("searchInput").value=t;hideSug();handleSearch();}
+function hideSug(){document.getElementById("sugs").innerHTML="";activeIdx=-1;}
+
+/* ── INIT ── */
+Promise.all([loadTitles(),loadTrending()]);
+</script>
+</body>
+</html>
+
